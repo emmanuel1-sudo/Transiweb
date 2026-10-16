@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Crear cuenta — Transiweb</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../vista/style/styles.css">
+</head>
+
+<body>
+
+    <header>
+
+        <div class="wrap nav">
+
+            <a href="../models/index.html" class="brand">
+                <span class="dot"></span>
+                transiweb
+            </a>
+
+            <a href="../models/index.html" class="nav-cta">
+                Volver al inicio
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <section class="registro">
+
+            <div class="registro-contenido">
+
+                <span class="section-eyebrow">
+                    Crear cuenta
+                </span>
+
+                <h1>
+                    Regístrate en Transiweb
+                </h1>
+
+                <p>
+                    Crea tu cuenta para acceder a las funciones
+                    de Transiweb.
+                </p>
+
+
+                <form action="../models/registrar.php" method="post">
+                    <div id="mensaje-registro" role="alert"></div>
+
+                    <div class="campo">
+
+                        <label for="nombre">
+                            Nombre completo
+                        </label>
+
+                        <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre" required>
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="correo">
+                            Correo electrónico
+                        </label>
+
+                        <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" required>
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="identificacion">
+                            Identificación
+                        </label>
+
+                        <input type="text" id="identificacion" name="identificacion" placeholder="Número de identificación" required>
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="password">
+                            Contraseña
+                        </label>
+
+                        <input type="password" id="password" name="password" placeholder="Crea una contraseña" required>
+
+                    </div>
+
+
+                    <button type="submit" class="btn-primary boton-registro">
+                        Crear cuenta
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <div class="wrap">
+
+            <div class="foot-bottom">
+
+                <span>
+                    © 2026 Transiweb. Proyecto académico.
+                </span>
+
+                <span class="mono">
+                    v1.0 — registro
+                </span>
+
+            </div>
+
+        </div>
+
+    </footer>
+    <link rel="stylesheet" href="../vista/style/styles.css">
+    <script src="../control/registro.js"></script>
+
+</body>
+
+</html>
