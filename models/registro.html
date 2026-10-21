@@ -64,7 +64,8 @@
                             Nombre completo
                         </label>
 
-                        <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre" required>
+                        <input type="text" maxlength="30" id="nombre" name="nombre" placeholder="Escribe tu nombre" required>  
+
 
                     </div>
 
@@ -75,7 +76,7 @@
                             Correo electrónico
                         </label>
 
-                        <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" required>
+                        <input type="email" maxlength="30" id="correo" name="correo" placeholder="ejemplo@correo.com" required>
 
                     </div>
 
@@ -84,9 +85,11 @@
 
                         <label for="identificacion">
                             Identificación
-                        </label>
+                        <inpu type="number" aria-placeholder="imgrese su numero">
+                       
+                    </label>
 
-                        <input type="text" id="identificacion" name="identificacion" placeholder="Número de identificación" required>
+                        <input type="text" maxlength="30" id="identificacion"  name="identificacion" placeholder="Número de identificación" required>
 
                     </div>
 
@@ -97,12 +100,13 @@
                             Contraseña
                         </label>
 
-                        <input type="password" id="password" name="password" placeholder="Crea una contraseña" required>
+                        <input type="password" maxlength="30" id="password" name="password" placeholder="Crea una contraseña" required>
 
                     </div>
 
 
-                    <button type="submit" class="btn-primary boton-registro">
+
+                    <button type="submit"  class="btn-primary boton-registro">
                         Crear cuenta
                     </button>
 
@@ -110,7 +114,11 @@
 
             </div>
 
+            
+
         </section>
+
+        
 
     </main>
 
