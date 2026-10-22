@@ -243,7 +243,52 @@
   </footer>
   <script src="../vista/style/styles.css"></script>
 
+        
+<!-- Asistente virtual Timo -->
+<div class="timo-asistente">
+
+    <button id="timo-boton"
+            class="timo-boton"
+            type="button"
+            aria-label="Chatear con Timo"
+            aria-expanded="false"
+            aria-controls="timo-chat">
+        <img src="../vista/imagenes/Mascota Robot Timo TRASIWEB.png" alt="Timo">
+        <span class="timo-indicador"></span>
+    </button>
+
+    <section id="timo-chat" class="timo-chat" hidden>
+        <header class="timo-encabezado">
+            <img src="../vista/img/timo.png" alt="">
+            <div>
+                <strong>Timo</strong>
+                <small>Asistente de Transiweb</small>
+            </div>
+            <button id="timo-cerrar" type="button"
+                    aria-label="Cerrar chat">×</button>
+        </header>
+
+        <div id="timo-mensajes" class="timo-mensajes"
+             aria-live="polite">
+            <div class="timo-mensaje timo-bot">
+                ¡Hola! Soy Timo. ¿Qué trámite necesitas consultar?
+            </div>
+        </div>
+
+        <form id="timo-formulario" class="timo-formulario">
+            <input id="timo-entrada" type="text"
+                   placeholder="Escribe tu mensaje..."
+                   aria-label="Escribe tu mensaje"
+                   autocomplete="off" required>
+            <button type="submit" aria-label="Enviar">➤</button>
+        </form>
+    </section>
+</div>
+
+<script src="../control/timo.js"></script>
 </body>
+
+
 
 </html>
 
