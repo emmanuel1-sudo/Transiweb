@@ -10,7 +10,7 @@
     --line: rgba(255, 255, 255, 0.16);
 }
 
-  *{margin:0;padding:0;box-sizing:border-box;}
+  *{margin:0;padding:4px, 8px;box-sizing:border-box;}
 
   html{scroll-behavior:smooth;}
 
@@ -364,7 +364,7 @@
 
 
   .cta{
-    background:var(--amber);
+    background:var(--navy-2);
     color:#FFFFFF;
     padding:72px 0;
   }
@@ -405,13 +405,71 @@
   }
   @media (max-width:760px){ .foot-grid{grid-template-columns:1fr 1fr;} .hero-grid{grid-template-columns:1fr;} .hero h1{font-size:38px;} }
 
-  Record book{
+  
+/* SECCIÓN DE REGISTRO */
+.registro {
+    width: 100%;
     min-height: calc(100vh - 72px);
+    display: grid;
+    grid-template-columns: 42% 58%;
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.registro-contenido {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    justify-self: center;
+    width: calc(100% - 40px);
+    max-width: 520px;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.registro-imagen {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 70px 32px;
+    min-width: 0;
+    padding: 30px;
+    background: var(--paper);
+    overflow: hidden;
+    box-sizing: border-box;
 }
+
+.registro-imagen img {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    max-height: 600px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 768px) {
+    .registro {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .registro-contenido {
+        grid-column: 1;
+        grid-row: 1;
+        margin: 25px auto;
+    }
+
+    .registro-imagen {
+        grid-column: 1;
+        grid-row: 2;
+        min-height: 280px;
+    }
+}
+
 
 .registro-contenido {
     width: 100%;
@@ -1013,5 +1071,401 @@
 
     .funcionamiento-ayuda {
         padding: 25px;
+    }
+}
+
+
+/* ===== ASISTENTE VIRTUAL TIMO ===== */
+
+.timo-asistente {
+    position: fixed;
+    right: 24px;
+    bottom: 22px;
+    z-index: 9999;
+    font-family: 'Inter', sans-serif;
+}
+
+.timo-boton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 5px 22px rgba(0, 0, 0, 0.22);
+    transition: transform 0.2s ease;
+}
+
+.timo-boton:hover {
+    transform: translateY(-5px) scale(1.04);
+}
+
+.timo-boton img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.timo-indicador {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 16px;
+    height: 16px;
+    background: #22c55e;
+    border: 3px solid white;
+    border-radius: 50%;
+}
+
+.timo-chat {
+    position: absolute;
+    right: 0;
+    bottom: 105px;
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 460px;
+    max-height: calc(100vh - 150px);
+    background: #ffffff;
+    border: 1px solid #dce5e7;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.timo-chat[hidden] {
+    display: none !important;
+}
+
+.timo-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    color: white;
+    background: #227F87;
+}
+
+.timo-chat-header img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    background: white;
+    border-radius: 50%;
+}
+
+.timo-chat-header div {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.timo-chat-header small {
+    margin-top: 3px;
+    color: #e0f2f1;
+    font-size: 12px;
+}
+
+.timo-chat-header button {
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.timo-mensajes {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    overflow-y: auto;
+    background: #f2f4f7;
+}
+
+.timo-mensaje {
+    max-width: 88%;
+    padding: 11px 13px;
+    border-radius: 13px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.timo-bot {
+    align-self: flex-start;
+    background: white;
+    color: #24343a;
+    border: 1px solid #e1e8e9;
+}
+
+.timo-usuario {
+    align-self: flex-end;
+    background: #227F87;
+    color: white;
+}
+
+.timo-sugerencias {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    background: white;
+}
+
+.timo-sugerencias button {
+    padding: 7px 10px;
+    border: 1px solid #227F87;
+    border-radius: 18px;
+    color: #227F87;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.timo-formulario {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid #e2e8f0;
+    background: white;
+}
+
+.timo-formulario input {
+    flex: 1;
+    min-width: 0;
+    padding: 11px;
+    border: 1px solid #d1dbe0;
+    border-radius: 9px;
+    outline-color: #227F87;
+    font: inherit;
+    font-size: 13px;
+}
+
+.timo-formulario button {
+    width: 42px;
+    border: 0;
+    border-radius: 9px;
+    color: white;
+    background: #22872A;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+@media (max-width: 480px) {
+    .timo-asistente {
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .timo-boton {
+        width: 72px;
+        height: 72px;
+    }
+
+    .timo-chat {
+        position: fixed;
+        right: 10px;
+        bottom: 94px;
+        width: calc(100vw - 20px);
+        height: min(480px, calc(100dvh - 120px));
+        max-height: none;
+    }
+}
+
+
+/* Burbuja flotante de Timo */
+.timo-asistente {
+    position: fixed !important;
+    right: 22px;
+    bottom: 20px;
+    z-index: 99999;
+}
+
+.timo-boton {
+    width: 78px;
+    height: 78px;
+    padding: 4px;
+    border: 3px solid #227F87;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.25);
+    animation: timo-flotar 3s ease-in-out infinite;
+}
+
+.timo-boton img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.timo-indicador {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    right: 0;
+    bottom: 2px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #22c55e;
+}
+
+@keyframes timo-flotar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* Ventana del chat encima de la burbuja */
+.timo-chat {
+    position: absolute;
+    right: 0;
+    bottom: 92px;
+    width: 350px;
+    height: 450px;
+    max-height: calc(100dvh - 130px);
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.25);
+}
+
+.timo-chat[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 480px) {
+    .timo-asistente {
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .timo-boton {
+        width: 66px;
+        height: 66px;
+    }
+
+    .timo-chat {
+        position: fixed;
+        right: 10px;
+        bottom: 88px;
+        width: calc(100vw - 20px);
+        height: min(450px, calc(100dvh - 110px));
+    }
+}
+/* PANEL DE ADMINISTRACIÓN */
+
+body.pagina-admin {
+    background: #F4F8F5;
+}
+
+.pagina-admin .admin-panel {
+    max-width: 1150px;
+    margin: 55px auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+.pagina-admin .admin-etiqueta {
+    color: #123D2A;
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.pagina-admin .admin-panel h1 {
+    color: #168F91;
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 12px 0;
+}
+
+.pagina-admin .admin-descripcion {
+    color: #68776D;
+    margin-bottom: 35px;
+    line-height: 1.6;
+}
+
+.pagina-admin .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.pagina-admin .admin-tarjeta {
+    min-width: 0;
+    background: #FFFFFF;
+    border: 1px solid #E1E8E2;
+    border-radius: 4px;
+    padding: 28px;
+    box-sizing: border-box;
+    box-shadow: 0 5px 18px rgba(18, 61, 42, 0.04);
+}
+
+.pagina-admin .admin-numero {
+    display: inline-block;
+    background: #F4E9C9;
+    color: #123D2A;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.pagina-admin .admin-tarjeta h2 {
+    color: #168F91;
+    font-size: 21px;
+    margin: 22px 0 12px;
+}
+
+.pagina-admin .admin-tarjeta p {
+    color: #68776D;
+    line-height: 1.6;
+}
+
+.pagina-admin .admin-enlace {
+    display: inline-block;
+    margin-top: 12px;
+    color: #168447;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.pagina-admin .admin-enlace:hover {
+    color: #123D2A;
+    text-decoration: underline;
+}
+
+.pagina-admin .admin-volver {
+    display: inline-block;
+    margin-top: 30px;
+    background: #168447;
+    color: #FFFFFF;
+    padding: 14px 22px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.pagina-admin .admin-volver:hover {
+    background: #123D2A;
+}
+
+@media (max-width: 800px) {
+    .pagina-admin .admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pagina-admin .admin-panel {
+        margin-top: 40px;
     }
 }
