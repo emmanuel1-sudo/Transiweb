@@ -2,7 +2,7 @@
 
 session_start();
 
-require_once "conexion.php";
+require_once __DIR__ . "/../models/conexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: login.html");
@@ -16,7 +16,7 @@ if ($correo === "" || $password === "") {
     exit("Debes ingresar el correo y la contraseña.");
 }
 
-$sql = "SELECT id, nombre, correo, password
+$sql = "SELECT id, nombre, correo, password, rol
         FROM usuarios
         WHERE correo = ?
         LIMIT 1";
@@ -28,24 +28,38 @@ if (!$stmt) {
 }
 
 $stmt->bind_param("s", $correo);
-$stmt->execute();
+if (!$stmt->execute()) {
+    $stmt->close();
+    exit("Error al ejecutar la consulta.");
+}
 
 $resultado = $stmt->get_result();
 
-if ($usuario = $resultado->fetch_assoc()) {
+if (!$resultado) {
+    $stmt->close();
+    exit("Error al obtener el usuario.");
+}
 
-    if (password_verify($password, $usuario["password"])) {
+$usuario = $resultado->fetch_assoc();
+$resultado->free();
+$stmt->close();
 
-        session_regenerate_id(true);
+if ($usuario && password_verify($password, $usuario["password"])) {
+    session_regenerate_id(true);
 
-        $_SESSION["usuario_id"] = $usuario["id"];
-        $_SESSION["usuario_nombre"] = $usuario["nombre"];
-        $_SESSION["usuario_correo"] = $usuario["correo"];
+    $_SESSION["usuario_id"] = $usuario["id"];
+    $_SESSION["usuario_nombre"] = $usuario["nombre"];
+    $_SESSION["usuario_correo"] = $usuario["correo"];
 
-        header("Location: lobby.php");
+    $rol = strtolower(trim($usuario["rol"]));
+
+    if (in_array($rol, ["admin", "administrador"], true)) {
+        header("Location: admin_lobby.php");
         exit;
-
     }
+
+    header("Location: lobby.php");
+    exit;
 }
 
 $stmt->close();
