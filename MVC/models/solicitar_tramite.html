@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Solicitar trámite - Transiweb</title>
+
+    <link rel="stylesheet" href="/vista/style/styles.css" />
+  </head>
+
+  <body class="pagina-lobby">
+    <header>
+      <div class="wrap nav">
+        <a href="/lobby" class="brand">
+          <span class="dot"></span>
+          TRANSIWEB
+        </a>
+
+        <a href="/cerrar_sesion">Cerrar sesión</a>
+      </div>
+    </header>
+
+    <main class="lobby-principal">
+      <div class="wrap">
+        <section class="lobby-bienvenida">
+          <span class="section-eyebrow">SOLICITUD DE TRÁMITES</span>
+
+          <h1>Enviar documentación</h1>
+
+          <p>
+            Selecciona el trámite y adjunta los documentos necesarios en formato
+            PDF.
+          </p>
+        </section>
+
+        <section class="registro">
+          <div class="registro-contenido">
+            <form
+              action="/enviar_documentacion"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="campo">
+                <label for="tramite">Tipo de trámite</label>
+
+                <select id="tramite" name="tramite_id" required>
+                  <option value="">Selecciona un trámite</option>
+
+                  {% for tramite in tramites %}
+
+                  <option value="{{ tramite.id }}">{{ tramite.nombre }}</option>
+
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="campo">
+                <label for="documentos"> Adjuntar documentos (solo PDF) </label>
+
+                <input
+                  type="file"
+                  id="documentos"
+                  name="documentos"
+                  accept=".pdf,application/pdf"
+                  multiple
+                  required
+                />
+              </div>
+
+              <button type="submit" class="btn-primary">
+                Enviar documentación
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <div class="lobby-acciones">
+          <a href="/panel_usuario" class="btn-primary"> Volver al panel </a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Gestión de trámites | Transiweb</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 30px 15px;
+        font-family: Arial, sans-serif;
+        background: #f2f5f9;
+        color: #333;
+      }
+
+      .contenedor {
+        max-width: 1100px;
+        margin: auto;
+        padding: 25px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      h1,
+      h2 {
+        color: #227f87;
+      }
+
+      .volver {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #227f87;
+        text-decoration: none;
+      }
+
+      .formulario {
+        margin: 25px 0;
+        padding: 20px;
+        background: #f7f9fc;
+        border-radius: 10px;
+      }
+
+      label {
+        display: block;
+        margin: 15px 0 7px;
+        font-weight: bold;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #ccd5e0;
+        border-radius: 6px;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+
+      button,
+      .boton {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        background: #227f87;
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      button:hover,
+      .boton:hover {
+        background: #1769aa;
+      }
+
+      .eliminar {
+        background: #c62828;
+      }
+
+      .mensaje {
+        padding: 12px;
+        margin: 15px 0;
+        border-radius: 6px;
+        background: #e7f7ec;
+        color: #176534;
+      }
+
+      .error {
+        background: #fdeaea;
+        color: #a32121;
+      }
+
+      .tabla-contenedor {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e1e6ed;
+        vertical-align: top;
+      }
+
+      th {
+        background: #227f87;
+        color: white;
+      }
+
+      @media (max-width: 700px) {
+        .contenedor {
+          padding: 15px;
+        }
+
+        table {
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="contenedor">
+      <a class="volver" href="/admin_lobby">
+        ← Volver al panel administrativo
+      </a>
+
+      <h1>Gestión de trámites</h1>
+
+      {% with mensajes = get_flashed_messages(with_categories=true) %} {% for
+      categoria, mensaje in mensajes %}
+      <div class="mensaje {{ 'error' if categoria == 'error' else '' }}">
+        {{ mensaje }}
+      </div>
+      {% endfor %} {% endwith %}
+
+      <!-- FORMULARIO PARA AGREGAR -->
+
+      <section class="formulario">
+        <h2>Agregar trámite</h2>
+
+        <form method="POST" action="{{ url_for('admin.tramites') }}">
+          <input type="hidden" name="accion" value="agregar" />
+
+          <label for="nombre">Nombre del trámite</label>
+
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            maxlength="150"
+            required
+          />
+
+          <label for="descripcion">Descripción</label>
+
+          <textarea id="descripcion" name="descripcion"></textarea>
+
+          <button type="submit">Agregar trámite</button>
+        </form>
+      </section>
+
+      <!-- TABLA DE TRÁMITES -->
+
+      <h2>Trámites registrados</h2>
+
+      <p>Total de trámites: {{ tramites|length }}</p>
+
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Fecha de creación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for fila in tramites %}
+
+            <tr>
+              <td>{{ fila.id }}</td>
+
+              <td>{{ fila.nombre }}</td>
+
+              <td>{{ fila.descripcion or '' }}</td>
+
+              <td>{{ fila.estado }}</td>
+
+              <td>{{ fila.creado_en or '' }}</td>
+
+              <td>
+                <form
+                  method="POST"
+                  action="{{ url_for('admin.tramites') }}"
+                  onsubmit="
+                    return confirm('¿Seguro que deseas eliminar este trámite?');
+                  "
+                >
+                  <input type="hidden" name="accion" value="eliminar" />
+
+                  <input
+                    type="hidden"
+                    name="eliminar_id"
+                    value="{{ fila.id }}"
+                  />
+
+                  <button type="submit" class="eliminar">Eliminar</button>
+                </form>
+
+                <a
+                  class="boton"
+                  href="{{ url_for('admin.editar_tramite', id_tramite=fila.id) }}"
+                >
+                  Editar
+                </a>
+              </td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+              <td colspan="6">No hay trámites registrados.</td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>
