@@ -1,4 +1,4 @@
-from werkzeug.utils import secure_filename
+
 import uuid
 
 from flask import (
@@ -11,6 +11,8 @@ from MVC.models.config.database import conectar_bd
 from MVC.models.auth import auth
 from flask import render_template_string
 import os
+
+from werkzeug.utils import secure_filename
 
 
 # ==========================================================
@@ -27,7 +29,11 @@ app = Flask(
 from MVC.admin_routes import admin_bp
 app.register_blueprint(admin_bp)
 
-app.config["SECRET_KEY"] = "transiweb-clave-temporal-cambiar"
+
+app.config["SECRET_KEY"] = os.environ.get("TRANSIWEB_SECRET_KEY")
+
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError("TRANSIWEB_SECRET_KEY needs to be configured")
 
 app.register_blueprint(auth)
 
@@ -579,6 +585,49 @@ def admin_tramites():
 
                     if cursor.fetchone() is None:
                         return "Trámite no encontrado.", 404
+
+                conexion.commit()
+
+                return redirect("/admin/procedures")
+            
+                        # Delete a procedure
+            elif accion == "eliminar":
+                tramite_id = request.form.get("eliminar_id", type=int)
+
+                if not tramite_id:
+                    return "El ID del trámite no es válido.", 400
+
+                # Verificar si el trámite existe
+                cursor.execute(
+                    "SELECT id FROM tramites WHERE id = %s",
+                    (tramite_id,)
+                )
+
+                tramite = cursor.fetchone()
+
+                if not tramite:
+                    return "El trámite no existe.", 404
+
+                # Verificar si tiene solicitudes relacionadas
+                cursor.execute(
+                    "SELECT id FROM solicitudes WHERE tramite_id = %s LIMIT 1",
+                    (tramite_id,)
+                )
+
+                solicitud = cursor.fetchone()
+
+                if solicitud:
+                    return (
+                        "No se puede eliminar este trámite porque tiene "
+                        "solicitudes registradas. Puedes cambiar su estado a inactivo.",
+                        409
+                    )
+
+                # Eliminar el trámite
+                cursor.execute(
+                    "DELETE FROM tramites WHERE id = %s",
+                    (tramite_id,)
+                )
 
                 conexion.commit()
 
