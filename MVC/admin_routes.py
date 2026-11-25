@@ -28,6 +28,7 @@ def admin_requerido():
     return None
 
 
+
 @admin_bp.route("/admin/tramites", methods=["GET", "POST"])
 def tramites():
 
@@ -45,8 +46,9 @@ def tramites():
 
         if request.method == "POST":
 
-            accion = request.form.get("accion")
+            accion = request.form.get("accion", "")
 
+            # AGREGAR TRÁMITE
             if accion == "agregar":
 
                 nombre = request.form.get("nombre", "").strip()
@@ -55,18 +57,22 @@ def tramites():
                 if not nombre:
                     flash("Escribe el nombre del trámite.", "error")
 
+                elif len(nombre) > 150:
+                    flash("El nombre no puede superar los 150 caracteres.", "error")
+
                 else:
                     cursor.execute(
-                        """INSERT INTO tramites
-                        (nombre, descripcion, estado)
-                        VALUES (%s, %s, 'activo')""",
-                        (nombre, descripcion)
+                        """
+                        INSERT INTO tramites (nombre, descripcion, estado)
+                        VALUES (%s, %s, 'activo')
+                        """,
+                        (nombre, descripcion or None)
                     )
 
                     conexion.commit()
-
                     flash("Trámite agregado correctamente.", "success")
 
+            # CAMBIAR ESTADO
             elif accion == "estado":
 
                 tramite_id = request.form.get("tramite_id", type=int)
@@ -103,16 +109,69 @@ def tramites():
 
                     conexion.commit()
 
+            # ELIMINAR TRÁMITE
+            elif accion == "eliminar":
 
+                tramite_id = request.form.get("eliminar_id", type=int)
+
+                if not tramite_id or tramite_id <= 0:
                     flash("ID de trámite inválido.", "error")
+
+                else:
+                    cursor.execute(
+                        "SELECT id FROM tramites WHERE id = %s",
+                        (tramite_id,)
+                    )
+
+                    tramite = cursor.fetchone()
+
+                    if not tramite:
+                        flash("El trámite no existe.", "error")
+
+                    else:
+                        # Comprobar si tiene solicitudes relacionadas
+                        cursor.execute(
+                            """
+                            SELECT id
+                            FROM solicitudes
+                            WHERE tramite_id = %s
+                            LIMIT 1
+                            """,
+                            (tramite_id,)
+                        )
+
+                        solicitud = cursor.fetchone()
+
+                        if solicitud:
+                            flash(
+                                "No se puede eliminar este trámite porque "
+                                "tiene solicitudes registradas. "
+                                "Puedes cambiarlo a inactivo.",
+                                "error"
+                            )
+
+                        else:
+                            cursor.execute(
+                                "DELETE FROM tramites WHERE id = %s",
+                                (tramite_id,)
+                            )
+
+                            conexion.commit()
+                            flash("Trámite eliminado correctamente.", "success")
+
+            else:
+                flash("La acción solicitada no es válida.", "error")
 
             return redirect(url_for("admin.tramites"))
 
-        cursor.execute("""
+        # CONSULTAR TRÁMITES
+        cursor.execute(
+            """
             SELECT id, nombre, descripcion, estado, creado_en
             FROM tramites
             ORDER BY id DESC
-        """)
+            """
+        )
 
         datos = cursor.fetchall()
 
@@ -137,6 +196,7 @@ def tramites():
 
         if conexion and conexion.is_connected():
             conexion.close()
+
 
 @admin_bp.route(
     "/admin/editar_tramite/<int:id_tramite>",
