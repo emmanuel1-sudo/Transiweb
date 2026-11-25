@@ -1,4 +1,4 @@
-
+vscode_lsp_terminal_prompt_tracker= {}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -23,12 +23,23 @@
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: var(--paper);
-            color: var(--navy);
-        }
+    margin: 0;
+    font-family: Arial, sans-serif;
 
+    background:
+        linear-gradient(
+            rgba(242, 244, 247, 0.82),
+            rgba(242, 244, 247, 0.82)
+        ),
+        url("/vista/imagenes/fondo-bus.jpg");
+
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: var(--navy);
+}
 
         header {
             background: var(--navy);
@@ -72,7 +83,7 @@
             background: var(--navy-2);
         }
 
-
+    
         main {
             max-width: 1150px;
             margin: 55px auto;
@@ -107,14 +118,13 @@
             margin: 35px 0 18px;
         }
 
-
         .panel-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 22px;
         }
 
-
+  
         .tarjeta {
             background: white;
             border: 1px solid #e1e5ea;
@@ -147,7 +157,6 @@
             transform: scale(1.04);
         }
 
-        /* CONTENIDO DE LAS TARJETAS */
 
         .tarjeta-contenido {
             padding: 22px 25px 25px;
@@ -166,8 +175,6 @@
             margin: 0 0 22px;
             flex-grow: 1;
         }
-
-      
 
         .boton {
             display: inline-block;
@@ -191,8 +198,6 @@
             background: var(--amber);
         }
 
-        
-
         .nota {
             margin-top: 30px;
             padding: 18px;
@@ -204,7 +209,7 @@
             font-size: 14px;
         }
 
-        
+        /* PIE DE PÁGINA */
 
         footer {
             text-align: center;
@@ -213,8 +218,7 @@
             font-size: 13px;
         }
 
-        /* TABLETS */
-
+   
         @media (max-width: 850px) {
             .panel-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -250,7 +254,6 @@
 </head>
 
 <body>
-
 
     <header>
 
@@ -300,10 +303,7 @@
         </h2>
 
 
-        <!-- TARJETAS ADMINISTRATIVAS -->
-
         <section class="panel-grid">
-
 
 
             <article class="tarjeta">
@@ -400,8 +400,6 @@
         </section>
 
 
-       
-
         <div class="nota">
 
             <strong>Importante:</strong>
@@ -412,7 +410,6 @@
         </div>
 
     </main>
-
 
 
     <footer>
