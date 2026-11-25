@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar solicitudes - Transiweb</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Arial, sans-serif;
+            background: #f2f5f8;
+            color: #333;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: #1769aa;
+            margin-top: 0;
+        }
+
+        .volver {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1769aa;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .volver:hover {
+            text-decoration: underline;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1769aa;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f7faff;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+        }
+
+        button {
+            padding: 8px 13px;
+            border: none;
+            border-radius: 5px;
+            background: #1769aa;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #10558c;
+        }
+
+        .mensaje {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .sin-solicitudes {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <a class="volver" href="/admin_lobby">← Volver al panel</a>
+
+        <h1>Administrar solicitudes</h1>
+        <p>Consulta las solicitudes de los clientes y actualiza su estado.</p>
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+            {% if mensajes %}
+                {% for categoria, mensaje in mensajes %}
+                    <div class="mensaje {{ categoria }}">
+                        {{ mensaje }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Correo</th>
+                        <th>Trámite</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Actualizar</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for solicitud in solicitudes %}
+                        <tr>
+                            <td>{{ solicitud.id }}</td>
+                            <td>{{ solicitud.nombre }}</td>
+                            <td>{{ solicitud.correo }}</td>
+                            <td>{{ solicitud.tramite_id }}</td>
+                            <td>
+                                {{ estados.get(solicitud.estado, solicitud.estado) }}
+                            </td>
+                            <td>{{ solicitud.fecha_solicitud }}</td>
+
+                            <td>
+                                <form method="POST"
+                                      action="{{ url_for('admin.solicitudes') }}">
+
+                                    <input type="hidden"
+                                           name="solicitud_id"
+                                           value="{{ solicitud.id }}">
+
+                                    <select name="estado" required>
+                                        {% for valor, texto in estados.items() %}
+                                            <option value="{{ valor }}"
+                                                {% if solicitud.estado == valor %}
+                                                    selected
+                                                {% endif %}>
+                                                {{ texto }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit">
+                                        Guardar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="sin-solicitudes">
+                                No hay solicitudes registradas.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

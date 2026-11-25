@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestionar usuarios | Transiweb</title>
+
+    <style>
+        :root {
+            --navy: #227F87;
+            --navy2: #16223F;
+            --amber: #FFB627;
+            --paper: #F2F4F7;
+            --white: #FFFFFF;
+            --line: #E3E8EF;
+            --red: #E63946;
+            --text: #16223F;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--paper);
+            color: var(--text);
+        }
+
+        header {
+            background: var(--navy);
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .marca {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .marca span {
+            color: var(--white);
+        }
+
+        .etiqueta {
+            color: var(--white);
+            font-size: 13px;
+        }
+
+        main {
+            max-width: 1250px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .volver {
+            display: inline-block;
+            margin-bottom: 22px;
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitulo {
+            color: #657187;
+            line-height: 1.6;
+        }
+
+        .aviso {
+            background: #E4F7E9;
+            color: #176B3A;
+            padding: 14px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .error {
+            background: #FDE8E8;
+            color: #A3212B;
+            padding: 14px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .tarjeta {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 22px;
+            margin: 22px 0;
+            box-shadow: 0 4px 18px #0000000D;
+        }
+
+        .total {
+            border-left: 5px solid var(--amber);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1050px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+        }
+
+        tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+        .rol {
+            display: inline-block;
+            background: #E9EEF5;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .rol-admin {
+            background: #FFF1C9;
+            color: #795000;
+        }
+
+        .botones {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .boton {
+            display: inline-block;
+            border: 0;
+            border-radius: 6px;
+            padding: 9px 12px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .editar {
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        .eliminar {
+            background: var(--red);
+            color: white;
+        }
+
+        .cancelar {
+            background: #E9EEF5;
+            color: var(--navy);
+        }
+
+        label {
+            display: block;
+            margin: 14px 0 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #CDD5E0;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:disabled,
+        select:disabled {
+            background: #E9EEF5;
+            cursor: not-allowed;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 18px;
+        }
+
+        .acciones-formulario {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .vacio {
+            text-align: center;
+            padding: 25px;
+            color: #657187;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #8D99AE;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 0 12px;
+            }
+
+            .tarjeta {
+                padding: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="marca">TRANSI<span>WEB</span></div>
+    <div class="etiqueta">Panel administrativo</div>
+</header>
+
+<main>
+
+    <a class="volver" href="{{ url_for('admin_lobby') }}">
+        &larr; Volver al panel
+    </a>
+
+    <h1>Gestionar usuarios</h1>
+
+    <p class="subtitulo">
+        Consulta, edita y elimina los usuarios registrados en Transiweb.
+    </p>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            {% for categoria, mensaje in mensajes %}
+                <div class="{{ 'error' if categoria == 'error' else 'aviso' }}"
+                     role="status">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <section class="tarjeta total">
+        Usuarios registrados: {{ usuarios|length }}
+    </section>
+
+    {% if usuario_editar %}
+
+        <section class="tarjeta" id="formulario-edicion">
+
+            <h2>Editar usuario #{{ usuario_editar.id }}</h2>
+
+            <form method="POST"
+                  action="{{ url_for('admin.usuarios') }}">
+
+                <input type="hidden"
+                       name="csrf_token"
+                       value="{{ token_csrf }}">
+
+                <input type="hidden"
+                       name="accion"
+                       value="editar">
+
+                <input type="hidden"
+                       name="id"
+                       value="{{ usuario_editar.id }}">
+
+                <div class="form-grid">
+
+                    <div>
+                        <label for="nombre">Nombre completo</label>
+
+                        <input id="nombre"
+                               name="nombre"
+                               type="text"
+                               maxlength="150"
+                               required
+                               value="{{ usuario_editar.nombre }}">
+                    </div>
+
+                    <div>
+                        <label for="correo">Correo electrónico</label>
+
+                        <input id="correo"
+                               name="correo"
+                               type="email"
+                               maxlength="254"
+                               required
+                               value="{{ usuario_editar.correo }}">
+                    </div>
+
+                    <div>
+                        <label for="identificacion">Identificación</label>
+
+                        <input id="identificacion"
+                               name="identificacion"
+                               type="text"
+                               maxlength="50"
+                               required
+                               value="{{ usuario_editar.identificacion }}">
+                    </div>
+
+                    <div>
+                        <label for="rol">Rol</label>
+
+                        <select id="rol"
+                                name="rol"
+                                required
+                                {% if usuario_editar.id == session.usuario_id %}
+                                    disabled
+                                {% endif %}>
+
+                            <option value="usuario"
+                                {% if usuario_editar.rol|lower == 'usuario' %}
+                                    selected
+                                {% endif %}>
+                                Usuario
+                            </option>
+
+                            <option value="ciudadano"
+                                {% if usuario_editar.rol|lower == 'ciudadano' %}
+                                    selected
+                                {% endif %}>
+                                Ciudadano
+                            </option>
+
+                            <option value="admin"
+                                {% if usuario_editar.rol|lower == 'admin' %}
+                                    selected
+                                {% endif %}>
+                                Administrador
+                            </option>
+
+                            <option value="administrador"
+                                {% if usuario_editar.rol|lower == 'administrador' %}
+                                    selected
+                                {% endif %}>
+                                Administrador
+                            </option>
+
+                        </select>
+
+                        {% if usuario_editar.id == session.usuario_id %}
+
+                            <input type="hidden"
+                                   name="rol"
+                                   value="{{ usuario_editar.rol }}">
+
+                            <small>
+                                No puedes cambiar tu propio rol.
+                            </small>
+
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="acciones-formulario">
+
+                    <button class="boton editar" type="submit">
+                        Guardar cambios
+                    </button>
+
+                    <a class="boton cancelar"
+                       href="{{ url_for('admin.usuarios') }}">
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    {% endif %}
+
+    <section class="tarjeta">
+
+        <h2>Listado de usuarios</h2>
+
+        <div class="tabla-contenedor">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Identificación</th>
+                        <th>Rol</th>
+                        <th>Fecha de registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% if usuarios %}
+
+                        {% for fila in usuarios %}
+
+                            <tr>
+
+                                <td>{{ fila.id }}</td>
+
+                                <td>{{ fila.nombre }}</td>
+
+                                <td>{{ fila.correo }}</td>
+
+                                <td>{{ fila.identificacion }}</td>
+
+                                <td>
+                                    <span class="rol
+                                        {% if fila.rol|lower in ['admin', 'administrador'] %}
+                                            rol-admin
+                                        {% endif %}">
+                                        {{ fila.rol }}
+                                    </span>
+                                </td>
+
+                                <td>{{ fila.fecha_registro }}</td>
+
+                                <td>
+
+                                    <div class="botones">
+
+                                        <a class="boton editar"
+                                           href="{{ url_for('admin.usuarios', editar=fila.id) }}">
+                                            Editar
+                                        </a>
+
+                                        {% if fila.id not in [27, 28] and fila.id != session.usuario_id %}
+
+                                            <form method="POST"
+                                                  action="{{ url_for('admin.usuarios') }}"
+                                                  onsubmit="return confirm('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.');">
+
+                                                <input type="hidden"
+                                                       name="csrf_token"
+                                                       value="{{ token_csrf }}">
+
+                                                <input type="hidden"
+                                                       name="accion"
+                                                       value="eliminar">
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="{{ fila.id }}">
+
+                                                <button class="boton eliminar"
+                                                        type="submit">
+                                                    Eliminar
+                                                </button>
+
+                                            </form>
+
+                                        {% else %}
+
+                                            <span title="Cuenta protegida">
+                                                Protegido
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <tr>
+                            <td colspan="7" class="vacio">
+                                No hay usuarios registrados.
+                            </td>
+                        </tr>
+
+                    {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    &copy; 2026 Transiweb. Proyecto académico.
+</footer>
+
+</body>
+</html>

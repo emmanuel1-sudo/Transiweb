@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel administrativo | Transiweb</title>
+
+    <style>
+        :root {
+            --navy: #227F87;
+            --navy-2: #22875D;
+            --amber: #227F87;
+            --grey: #8d9dae;
+            --paper: #F2F4F7;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--paper);
+            color: var(--navy);
+        }
+
+        header {
+            background: var(--navy);
+            color: var(--white);
+            padding: 22px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .marca {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .encabezado-derecha {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .etiqueta {
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .cerrar-sesion {
+            color: white;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,.35);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .cerrar-sesion:hover {
+            background: var(--navy-2);
+        }
+
+        main {
+            max-width: 1150px;
+            margin: 55px auto;
+            padding: 0 22px;
+        }
+
+        .bienvenida {
+            margin-bottom: 35px;
+        }
+
+        .sobrelinea {
+            color: #8A6500;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(28px, 4vw, 40px);
+            margin: 12px 0;
+        }
+
+        .bienvenida p,
+        .tarjeta p {
+            color: var(--grey);
+            line-height: 1.7;
+        }
+
+        .seccion-titulo {
+            font-size: 21px;
+            margin: 35px 0 18px;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .tarjeta {
+            background: white;
+            border: 1px solid #e1e5ea;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(15,27,51,.05);
+            display: flex;
+            flex-direction: column;
+            min-height: 235px;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(15,27,51,.10);
+        }
+
+        .icono {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFF1C9;
+            border-radius: 10px;
+            font-size: 26px;
+            margin-bottom: 18px;
+        }
+
+        .tarjeta h3 {
+            margin: 0 0 10px;
+            font-size: 19px;
+        }
+
+        .tarjeta p {
+            font-size: 14px;
+            margin: 0 0 22px;
+            flex-grow: 1;
+        }
+
+        .boton {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            background: var(--navy);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background .2s;
+        }
+
+        .boton:hover {
+            background: var(--navy-2);
+        }
+
+        .boton-principal {
+            background: var(--amber);
+        }
+
+        .nota {
+            margin-top: 30px;
+            padding: 18px;
+            border-left: 4px solid var(--amber);
+            background: white;
+            color: var(--grey);
+            line-height: 1.6;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #8D99AE;
+            font-size: 13px;
+        }
+
+        @media (max-width: 850px) {
+            .panel-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            main {
+                margin: 35px auto;
+                padding: 0 15px;
+            }
+
+            .panel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tarjeta {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="marca">TRANSI<span>WEB</span></div>
+
+        <div class="encabezado-derecha">
+            <span class="etiqueta">PANEL ADMINISTRATIVO</span>
+            <a class="cerrar-sesion" href="/cerrar_sesion">
+                Cerrar sesión
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="bienvenida">
+            <span class="sobrelinea">Administración de Transiweb</span>
+            <h1>¡Bienvenido, <span id="nombre-admin">Administrador</span>!</h1>
+
+            <p>
+                Desde este panel puedes administrar los usuarios,
+                los trámites y las solicitudes de la plataforma.
+                Selecciona una opción para continuar.
+            </p>
+        </section>
+
+        <h2 class="seccion-titulo">Opciones de administración</h2>
+
+        <section class="panel-grid">
+            <article class="tarjeta">
+                <div class="icono">👥</div>
+                <h3>Gestionar usuarios</h3>
+                <p>
+                    Consulta los usuarios registrados, modifica sus datos
+                    y administra sus roles.
+                </p>
+                <a class="boton boton-principal" href="/admin/usuarios">
+                    Gestionar usuarios
+                </a>
+            </article>
+
+            <article class="tarjeta">
+                <div class="icono">📋</div>
+                <h3>Gestionar trámites</h3>
+                <p>
+                    Administra la información y los procesos disponibles.
+                </p>
+                <a class="boton" href="/admin/tramites">
+                    Gestionar trámites
+                </a>
+            </article>
+
+            <article class="tarjeta">
+                <div class="icono">📨</div>
+                <h3>Gestionar solicitudes</h3>
+                <p>
+                    Revisa y gestiona las solicitudes de los ciudadanos.
+                </p>
+                <a class="boton" href="/admin/solicitudes">
+                    Gestionar solicitudes
+                </a>
+            </article>
+        </section>
+
+        <div class="nota">
+            <strong>Importante:</strong>
+            las opciones de usuarios, trámites y solicitudes se conectarán
+            con sus respectivas rutas de Flask.
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Transiweb. Proyecto académico.
+    </footer>
+</body>
+</html>

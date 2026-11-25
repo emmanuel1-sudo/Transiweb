@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar trámite | Transiweb</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            color: #000;
+        }
+
+        .contenedor {
+            max-width: 650px;
+            margin: auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .volver {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1769aa;
+            text-decoration: none;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 7px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccd5e0;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 6px;
+            background: #227F87;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1769aa;
+        }
+
+        .error {
+            padding: 12px;
+            margin: 15px 0;
+            background: #fdeaea;
+            color: #a32121;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="contenedor">
+
+    <a class="volver" href="{{ url_for('admin.tramites') }}">
+        ← Volver a trámites
+    </a>
+
+    <h1>Editar trámite #{{ tramite.id }}</h1>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form
+        method="POST"
+        action="{{ url_for('admin.editar_tramite', id_tramite=tramite.id) }}"
+    >
+
+        <label for="nombre">Nombre del trámite</label>
+
+        <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            maxlength="150"
+            required
+            value="{{ tramite.nombre }}"
+        >
+
+        <label for="descripcion">Descripción</label>
+
+        <textarea
+            id="descripcion"
+            name="descripcion"
+        >{{ tramite.descripcion or '' }}</textarea>
+
+        <label for="estado">Estado</label>
+
+        <select id="estado" name="estado" required>
+
+            <option
+                value="activo"
+                {% if tramite.estado == "activo" %}selected{% endif %}
+            >
+                Activo
+            </option>
+
+            <option
+                value="inactivo"
+                {% if tramite.estado == "inactivo" %}selected{% endif %}
+            >
+                Inactivo
+            </option>
+
+        </select>
+
+        <button type="submit">
+            Guardar cambios
+        </button>
+
+    </form>
+
+</main>
+
+</body>
+</html>
