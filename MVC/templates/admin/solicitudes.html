@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -51,13 +51,14 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 1100px;
         }
 
         th, td {
             padding: 12px;
             border-bottom: 1px solid #ddd;
             text-align: left;
+            vertical-align: middle;
         }
 
         th {
@@ -89,6 +90,29 @@
             background: #10558c;
         }
 
+        .ver-documento {
+            display: inline-block;
+            margin: 3px 0;
+            padding: 7px 10px;
+            background: #227F87;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .ver-documento:hover {
+            background: #176B3A;
+        }
+
+        .nombre-documento {
+            display: inline-block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
         .mensaje {
             padding: 12px;
             margin-bottom: 15px;
@@ -110,16 +134,28 @@
             padding: 25px;
             color: #666;
         }
+
+        .sin-documentos {
+            color: #888;
+            font-size: 13px;
+        }
     </style>
 </head>
 
 <body>
     <div class="contenedor">
-        <a class="volver" href="/admin_lobby">← Volver al panel</a>
+
+        <a class="volver" href="/admin_lobby">
+            ← Volver al panel
+        </a>
 
         <h1>Administrar solicitudes</h1>
-        <p>Consulta las solicitudes de los clientes y actualiza su estado.</p>
 
+        <p>
+            Consulta las solicitudes de los clientes y actualiza su estado.
+        </p>
+
+        <!-- MENSAJES DEL SISTEMA -->
         {% with mensajes = get_flashed_messages(with_categories=true) %}
             {% if mensajes %}
                 {% for categoria, mensaje in mensajes %}
@@ -130,7 +166,9 @@
             {% endif %}
         {% endwith %}
 
+        <!-- TABLA DE SOLICITUDES -->
         <div class="tabla-contenedor">
+
             <table>
                 <thead>
                     <tr>
@@ -140,57 +178,133 @@
                         <th>Trámite</th>
                         <th>Estado</th>
                         <th>Fecha</th>
+                        <th>Documentos PDF</th>
                         <th>Actualizar</th>
                     </tr>
                 </thead>
 
                 <tbody>
+
                     {% for solicitud in solicitudes %}
+
                         <tr>
-                            <td>{{ solicitud.id }}</td>
-                            <td>{{ solicitud.nombre }}</td>
-                            <td>{{ solicitud.correo }}</td>
-                            <td>{{ solicitud.tramite_id }}</td>
+
+                            <td>
+                                {{ solicitud.id }}
+                            </td>
+
+                            <td>
+                                {{ solicitud.nombre }}
+                            </td>
+
+                            <td>
+                                {{ solicitud.correo }}
+                            </td>
+
+                            <td>
+                               {{ solicitud.nombre_tramite }}
+                            </td>
+
                             <td>
                                 {{ estados.get(solicitud.estado, solicitud.estado) }}
                             </td>
-                            <td>{{ solicitud.fecha_solicitud }}</td>
 
                             <td>
-                                <form method="POST"
-                                      action="{{ url_for('admin.solicitudes') }}">
+                                {{ solicitud.fecha_solicitud }}
+                            </td>
 
-                                    <input type="hidden"
-                                           name="solicitud_id"
-                                           value="{{ solicitud.id }}">
+                            <!-- DOCUMENTOS PDF -->
+                            <td>
+
+                                {% if solicitud.documentos %}
+
+                                    {% for documento in solicitud.documentos %}
+
+                                        <a
+                                            class="ver-documento"
+                                            href="{{ url_for('admin.ver_documento', documento_id=documento.id) }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer">
+
+                                            📄 Ver PDF
+
+                                        </a>
+
+                                        <br>
+
+                                        <small class="nombre-documento">
+                                            {{ documento.nombre_archivo }}
+                                        </small>
+
+                                        <br>
+
+                                    {% endfor %}
+
+                                {% else %}
+
+                                    <span class="sin-documentos">
+                                        Sin documentos
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- ACTUALIZAR ESTADO -->
+                            <td>
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('admin.solicitudes') }}">
+
+                                    <input
+                                        type="hidden"
+                                        name="solicitud_id"
+                                        value="{{ solicitud.id }}">
 
                                     <select name="estado" required>
+
                                         {% for valor, texto in estados.items() %}
-                                            <option value="{{ valor }}"
+
+                                            <option
+                                                value="{{ valor }}"
                                                 {% if solicitud.estado == valor %}
                                                     selected
                                                 {% endif %}>
+
                                                 {{ texto }}
+
                                             </option>
+
                                         {% endfor %}
+
                                     </select>
 
                                     <button type="submit">
                                         Guardar
                                     </button>
+
                                 </form>
+
                             </td>
+
                         </tr>
+
                     {% else %}
+
                         <tr>
-                            <td colspan="7" class="sin-solicitudes">
+                            <td colspan="8" class="sin-solicitudes">
                                 No hay solicitudes registradas.
                             </td>
                         </tr>
+
                     {% endfor %}
+
                 </tbody>
             </table>
+
         </div>
+
     </div>
 </body>
 </html>
