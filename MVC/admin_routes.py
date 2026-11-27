@@ -1,12 +1,28 @@
-
+vscode_lsp_terminal_prompt_tracker= {}
+import secrets
+import hmac
+import os
 import mysql.connector
 
 from flask import (
-    Blueprint, abort, flash, redirect,
-    render_template, request, session, url_for
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for
 )
 
 from MVC.models.config.database import conectar_bd
+
+
+# =========================================================
+# CONFIGURACIÓN DEL BLUEPRINT
+# =========================================================
 
 admin_bp = Blueprint(
     "admin",
@@ -15,19 +31,27 @@ admin_bp = Blueprint(
 )
 
 
+# =========================================================
+# VERIFICAR ACCESO DE ADMINISTRADOR
+# =========================================================
+
 def admin_requerido():
 
     if not session.get("usuario_id"):
         return redirect("/login.html")
 
     if str(session.get("usuario_rol", "")).lower() not in (
-        "admin", "administrador"
+        "admin",
+        "administrador"
     ):
         abort(403)
 
     return None
 
 
+# =========================================================
+# GESTIÓN DE TRÁMITES
+# =========================================================
 
 @admin_bp.route("/admin/tramites", methods=["GET", "POST"])
 def tramites():
@@ -58,7 +82,10 @@ def tramites():
                     flash("Escribe el nombre del trámite.", "error")
 
                 elif len(nombre) > 150:
-                    flash("El nombre no puede superar los 150 caracteres.", "error")
+                    flash(
+                        "El nombre no puede superar los 150 caracteres.",
+                        "error"
+                    )
 
                 else:
                     cursor.execute(
@@ -70,7 +97,11 @@ def tramites():
                     )
 
                     conexion.commit()
-                    flash("Trámite agregado correctamente.", "success")
+
+                    flash(
+                        "Trámite agregado correctamente.",
+                        "success"
+                    )
 
             # CAMBIAR ESTADO
             elif accion == "estado":
@@ -95,6 +126,7 @@ def tramites():
                     )
 
                     if cursor.rowcount == 0:
+
                         cursor.execute(
                             "SELECT id FROM tramites WHERE id = %s",
                             (tramite_id,)
@@ -103,9 +135,16 @@ def tramites():
                         if cursor.fetchone() is None:
                             flash("Trámite no encontrado.", "error")
                         else:
-                            flash("El trámite ya tenía ese estado.", "success")
+                            flash(
+                                "El trámite ya tenía ese estado.",
+                                "success"
+                            )
+
                     else:
-                        flash("Estado actualizado correctamente.", "success")
+                        flash(
+                            "Estado actualizado correctamente.",
+                            "success"
+                        )
 
                     conexion.commit()
 
@@ -129,7 +168,6 @@ def tramites():
                         flash("El trámite no existe.", "error")
 
                     else:
-                        # Comprobar si tiene solicitudes relacionadas
                         cursor.execute(
                             """
                             SELECT id
@@ -157,10 +195,17 @@ def tramites():
                             )
 
                             conexion.commit()
-                            flash("Trámite eliminado correctamente.", "success")
+
+                            flash(
+                                "Trámite eliminado correctamente.",
+                                "success"
+                            )
 
             else:
-                flash("La acción solicitada no es válida.", "error")
+                flash(
+                    "La acción solicitada no es válida.",
+                    "error"
+                )
 
             return redirect(url_for("admin.tramites"))
 
@@ -185,7 +230,10 @@ def tramites():
         if conexion:
             conexion.rollback()
 
-        flash(f"Error con la base de datos: {error}", "error")
+        flash(
+            f"Error con la base de datos: {error}",
+            "error"
+        )
 
         return redirect("/admin_lobby")
 
@@ -197,6 +245,10 @@ def tramites():
         if conexion and conexion.is_connected():
             conexion.close()
 
+
+# =========================================================
+# EDITAR TRÁMITE
+# =========================================================
 
 @admin_bp.route(
     "/admin/editar_tramite/<int:id_tramite>",
@@ -245,6 +297,9 @@ def editar_tramite(id_tramite):
 
             if nombre == "":
                 error = "Debes escribir el nombre del trámite."
+
+            elif len(nombre) > 150:
+                error = "El nombre no puede superar los 150 caracteres."
 
             elif estado not in ("activo", "inactivo"):
                 error = "El estado seleccionado no es válido."
@@ -296,24 +351,19 @@ def editar_tramite(id_tramite):
         if conexion and conexion.is_connected():
             conexion.close()
 
- # =========================================================
+
+# =========================================================
 # GESTIÓN DE USUARIOS
 # =========================================================
-
-import secrets
-import hmac
-
 
 @admin_bp.route("/admin/usuarios", methods=["GET", "POST"])
 def usuarios():
 
-    # Verificar que haya iniciado sesión
     if not session.get("usuario_id"):
         return redirect("/login.html")
 
     id_administrador = int(session.get("usuario_id"))
 
-    # Verificar el rol directamente en la base de datos
     conexion = None
     cursor = None
 
@@ -321,6 +371,7 @@ def usuarios():
         conexion = conectar_bd()
         cursor = conexion.cursor(dictionary=True)
 
+        # Verificar el rol directamente en la base de datos
         cursor.execute(
             "SELECT rol FROM usuarios WHERE id = %s",
             (id_administrador,)
@@ -335,19 +386,13 @@ def usuarios():
         ):
             abort(403)
 
-        # Crear token CSRF para proteger los formularios
+        # CREAR TOKEN CSRF
         if not session.get("csrf_usuarios"):
             session["csrf_usuarios"] = secrets.token_hex(32)
 
         token_csrf = session["csrf_usuarios"]
 
-        error = ""
-        mensaje = ""
-
-        # =================================================
         # PROCESAR FORMULARIOS
-        # =================================================
-
         if request.method == "POST":
 
             token_recibido = request.form.get("csrf_token", "")
@@ -357,10 +402,7 @@ def usuarios():
 
             accion = request.form.get("accion", "")
 
-            # ---------------------------------------------
             # EDITAR USUARIO
-            # ---------------------------------------------
-
             if accion == "editar":
 
                 id_usuario = request.form.get("id", type=int)
@@ -379,30 +421,52 @@ def usuarios():
                 ]
 
                 if not id_usuario or id_usuario < 1:
-                    flash("El ID del usuario no es válido.", "error")
+                    flash(
+                        "El ID del usuario no es válido.",
+                        "error"
+                    )
 
                 elif not nombre or not correo or not identificacion:
-                    flash("Todos los campos son obligatorios.", "error")
+                    flash(
+                        "Todos los campos son obligatorios.",
+                        "error"
+                    )
 
                 elif len(nombre) > 150:
-                    flash("El nombre no puede superar 150 caracteres.", "error")
+                    flash(
+                        "El nombre no puede superar 150 caracteres.",
+                        "error"
+                    )
 
                 elif len(correo) > 254:
-                    flash("El correo es demasiado largo.", "error")
+                    flash(
+                        "El correo es demasiado largo.",
+                        "error"
+                    )
 
                 elif len(identificacion) > 50:
-                    flash("La identificación es demasiado larga.", "error")
+                    flash(
+                        "La identificación es demasiado larga.",
+                        "error"
+                    )
 
                 elif "@" not in correo or "." not in correo.split("@")[-1]:
-                    flash("Ingresa un correo electrónico válido.", "error")
+                    flash(
+                        "Ingresa un correo electrónico válido.",
+                        "error"
+                    )
 
                 elif rol not in roles_permitidos:
-                    flash("El rol seleccionado no es válido.", "error")
+                    flash(
+                        "El rol seleccionado no es válido.",
+                        "error"
+                    )
 
                 else:
 
                     # No permitir cambiar el propio rol
                     if id_usuario == id_administrador:
+
                         cursor.execute(
                             "SELECT rol FROM usuarios WHERE id = %s",
                             (id_usuario,)
@@ -418,12 +482,14 @@ def usuarios():
                                 "No puedes cambiar tu propio rol.",
                                 "error"
                             )
+
                             return redirect(url_for("admin.usuarios"))
 
                     # Verificar correo duplicado
                     cursor.execute(
                         """
-                        SELECT id FROM usuarios
+                        SELECT id
+                        FROM usuarios
                         WHERE correo = %s AND id <> %s
                         """,
                         (correo, id_usuario)
@@ -434,7 +500,8 @@ def usuarios():
                     # Verificar identificación duplicada
                     cursor.execute(
                         """
-                        SELECT id FROM usuarios
+                        SELECT id
+                        FROM usuarios
                         WHERE identificacion = %s AND id <> %s
                         """,
                         (identificacion, id_usuario)
@@ -480,16 +547,16 @@ def usuarios():
                             "success"
                         )
 
-            # ---------------------------------------------
             # ELIMINAR USUARIO
-            # ---------------------------------------------
-
             elif accion == "eliminar":
 
                 id_usuario = request.form.get("id", type=int)
 
                 if not id_usuario or id_usuario < 1:
-                    flash("El ID del usuario no es válido.", "error")
+                    flash(
+                        "El ID del usuario no es válido.",
+                        "error"
+                    )
 
                 elif id_usuario in (27, 28, id_administrador):
                     flash(
@@ -510,6 +577,7 @@ def usuarios():
                             "Usuario eliminado correctamente.",
                             "success"
                         )
+
                     else:
                         conexion.rollback()
 
@@ -520,12 +588,15 @@ def usuarios():
                             "error"
                         )
 
+            else:
+                flash(
+                    "La acción solicitada no es válida.",
+                    "error"
+                )
+
             return redirect(url_for("admin.usuarios"))
 
-        # =================================================
         # CONSULTAR USUARIO PARA EDITAR
-        # =================================================
-
         id_editar = request.args.get("editar", type=int)
         usuario_editar = None
 
@@ -543,12 +614,12 @@ def usuarios():
             usuario_editar = cursor.fetchone()
 
             if not usuario_editar:
-                flash("El usuario seleccionado no existe.", "error")
+                flash(
+                    "El usuario seleccionado no existe.",
+                    "error"
+                )
 
-        # =================================================
         # LISTAR TODOS LOS USUARIOS
-        # =================================================
-
         cursor.execute(
             """
             SELECT id, nombre, correo, identificacion, rol, fecha_registro
@@ -586,6 +657,7 @@ def usuarios():
         if conexion and conexion.is_connected():
             conexion.close()
 
+
 # =========================================================
 # GESTIÓN DE SOLICITUDES
 # =========================================================
@@ -612,11 +684,12 @@ def solicitudes():
         conexion = conectar_bd()
         cursor = conexion.cursor(dictionary=True)
 
-        # Procesar actualización del estado
+        # ACTUALIZAR ESTADO DE SOLICITUD
         if request.method == "POST":
 
             solicitud_id = request.form.get(
-                "solicitud_id", type=int
+                "solicitud_id",
+                type=int
             )
 
             estado = request.form.get("estado", "")
@@ -643,16 +716,22 @@ def solicitudes():
                     (estado, solicitud_id)
                 )
 
-                conexion.commit()
+                if cursor.rowcount == 0:
+                    flash(
+                        "No se encontró la solicitud o ya tenía ese estado.",
+                        "error"
+                    )
+                else:
+                    flash(
+                        "El estado de la solicitud se actualizó correctamente.",
+                        "success"
+                    )
 
-                flash(
-                    "El estado de la solicitud se actualizó correctamente.",
-                    "success"
-                )
+                conexion.commit()
 
             return redirect(url_for("admin.solicitudes"))
 
-        # Consultar solicitudes
+        # CONSULTAR SOLICITUDES
         cursor.execute(
             """
             SELECT
@@ -660,6 +739,7 @@ def solicitudes():
                 u.nombre AS nombre,
                 u.correo,
                 t.id AS tramite_id,
+                t.nombre AS nombre_tramite,
                 s.estado,
                 s.fecha_solicitud
             FROM solicitudes s
@@ -672,6 +752,21 @@ def solicitudes():
         )
 
         lista_solicitudes = cursor.fetchall()
+
+        # CONSULTAR LOS PDF DE CADA SOLICITUD
+        for solicitud in lista_solicitudes:
+
+            cursor.execute(
+                """
+                SELECT id, nombre_archivo
+                FROM documentos_solicitud
+                WHERE solicitud_id = %s
+                ORDER BY id
+                """,
+                (solicitud["id"],)
+            )
+
+            solicitud["documentos"] = cursor.fetchall()
 
         return render_template(
             "admin/solicitudes.html",
@@ -697,4 +792,92 @@ def solicitudes():
             cursor.close()
 
         if conexion and conexion.is_connected():
-            conexion.close()            
+            conexion.close()
+
+
+# =========================================================
+# ABRIR DOCUMENTO PDF
+# =========================================================
+
+@admin_bp.route("/admin/document/<int:documento_id>")
+def ver_documento(documento_id):
+
+    acceso = admin_requerido()
+
+    if acceso:
+        return acceso
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = conectar_bd()
+        cursor = conexion.cursor(dictionary=True)
+
+        # BUSCAR DOCUMENTO EN LA BASE DE DATOS
+        cursor.execute(
+            """
+            SELECT nombre_archivo, ruta_archivo
+            FROM documentos_solicitud
+            WHERE id = %s
+            """,
+            (documento_id,)
+        )
+
+        documento = cursor.fetchone()
+
+        if not documento:
+            return "Documento no encontrado.", 404
+
+        # OBTENER LA RUTA PRINCIPAL DEL PROYECTO
+        base_dir = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))
+        )
+
+        # CARPETA PERMITIDA PARA LOS DOCUMENTOS
+        carpeta = os.path.abspath(
+            os.path.join(
+                base_dir,
+                "uploads",
+                "solicitudes"
+            )
+        )
+
+        # RUTA COMPLETA DEL PDF
+        ruta = os.path.abspath(
+            os.path.join(
+                base_dir,
+                documento["ruta_archivo"]
+            )
+        )
+
+        # COMPROBAR QUE EL ARCHIVO ESTÉ DENTRO DE LA CARPETA PERMITIDA
+        if os.path.commonpath([carpeta, ruta]) != carpeta:
+            return "Ruta no permitida.", 403
+
+        # COMPROBAR QUE EL ARCHIVO EXISTA
+        if not os.path.isfile(ruta):
+            return "El PDF no existe en el servidor.", 404
+
+        # ABRIR PDF EN EL NAVEGADOR
+        return send_file(
+            ruta,
+            mimetype="application/pdf",
+            as_attachment=False,
+            download_name=documento["nombre_archivo"]
+        )
+
+    except Exception:
+        current_app.logger.exception(
+            "Error al abrir PDF"
+        )
+
+        return "No se pudo abrir el documento.", 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if conexion and conexion.is_connected():
+            conexion.close()
