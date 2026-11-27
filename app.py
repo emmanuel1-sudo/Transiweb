@@ -9,10 +9,16 @@ from markupsafe import escape
 from mysql.connector import IntegrityError
 from MVC.models.config.database import conectar_bd
 from MVC.models.auth import auth
-from flask import render_template_string
 import os
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 from werkzeug.utils import secure_filename
+
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 
 # ==========================================================
@@ -26,6 +32,10 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "MVC", "vista"),
     static_url_path="/vista"
 )
+
+app.secret_key = os.getenv("TRANSIWEB_SECRET_KEY") 
+print("Clave secreta cargada:", bool(app.secret_key))
+
 from MVC.admin_routes import admin_bp
 app.register_blueprint(admin_bp)
 
@@ -1570,6 +1580,8 @@ def solicitar_tramite():
 @app.route("/enviar_documentacion", methods=["POST"])
 def enviar_documentacion():
 
+    print("ENTRÓ A LA RUTA ENVIAR DOCUMENTACIÓN", flush=True)
+
     if "usuario_id" not in session:
         return redirect("/login.html")
 
@@ -1580,11 +1592,21 @@ def enviar_documentacion():
         if archivo and archivo.filename
     ]
 
+    app.logger.warning("ID TRAMITE: %s", tramite_id)
+    app.logger.warning("ARCHIVOS RECIBIDOS: %s", len(archivos))
+    app.logger.warning("NOMBRES: %s", [a.filename for a in archivos])
+
+     # COMPROBAR QUÉ ESTÁ RECIBIENDO FLASK
+    print("ID del trámite recibido:", tramite_id)
+    print("PDF recibidos:", len(archivos))
+    print("Nombres:", [archivo.filename for archivo in archivos])
+
     if not tramite_id:
         return "Debes seleccionar un trámite.", 400
 
     if not archivos:
         return "Debes adjuntar al menos un documento PDF.", 400
+
 
     if len(archivos) > 20:
         return "Solo puedes adjuntar hasta 20 documentos.", 400
@@ -1702,4 +1724,13 @@ def enviar_documentacion():
             conexion.close()
               
 if __name__ == "__main__":
-    app.run(debug=True)
+    print("====================================")
+    print("TRANSIWEB - ARCHIVO APP.PY EJECUTADO")
+    print("RUTA:", os.path.abspath(__file__))
+    print("====================================", flush=True)
+
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False
+    )
