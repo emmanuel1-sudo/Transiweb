@@ -350,22 +350,8 @@
                                 Usuario
                             </option>
 
-                            <option value="ciudadano"
-                                {% if usuario_editar.rol|lower == 'ciudadano' %}
-                                    selected
-                                {% endif %}>
-                                Ciudadano
-                            </option>
-
                             <option value="admin"
                                 {% if usuario_editar.rol|lower == 'admin' %}
-                                    selected
-                                {% endif %}>
-                                Administrador
-                            </option>
-
-                            <option value="administrador"
-                                {% if usuario_editar.rol|lower == 'administrador' %}
                                     selected
                                 {% endif %}>
                                 Administrador
